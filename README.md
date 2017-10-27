@@ -5,9 +5,12 @@
 
 ## Overview
 
-* [Database](http://www.dirigible.io/api/database.html) - provides a standard access to the registered relational data sources
-* [SQL Query](http://www.dirigible.io/api/database_query.html) - provides a simplified query functionality, accepts SQL script and query parameters and returns the result-set as a JSON object
-* [SQL Update](http://www.dirigible.io/api/database_update.html) - provides simplified update functionality, accepts SQL script and query parameters and returns the result-set as a JSON object
+* [Database](http://www.dirigible.io/api/database.html)
+  - provides a standard access to the registered relational data sources
+* [SQL Query](http://www.dirigible.io/api/database_query.html)
+  - provides a simplified query functionality, accepts SQL script and query parameters and returns the result-set as a JSON object
+* [SQL Update](http://www.dirigible.io/api/database_update.html)
+  - provides simplified update functionality, accepts SQL script and query parameters and returns the result-set as a JSON object
 
 ## License
 
