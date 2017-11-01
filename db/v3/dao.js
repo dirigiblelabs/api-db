@@ -280,7 +280,7 @@ DAO.prototype.update = function(entity) {
         return this;
         
     } catch(e) {
-    	this.$log.error(e.message, e);
+    	this.$log.error('Updating '+this.orm.dbName+'['+entity!==undefined?entity[this.orm.getPrimaryKey().name]:entity+'] failed', e);
 		throw e;
     } finally {
         connection.close();
@@ -315,7 +315,7 @@ DAO.prototype.remove = function() {
        		id = parseInt(id, 10);
        		
 		if(ids.length>1)
-			this.$log.info('Deleting '+this.orm.dbName+'[' + id + '] entity');
+			this.$log.info('Deleting {}[{}] entity', this.orm.dbName, id);
 	
 		if(id === undefined || id === null){
 			throw new Error('Illegal argument for id parameter:' + id);
@@ -333,7 +333,7 @@ DAO.prototype.remove = function() {
 					var association = this.orm.associations[idx];
 					var associationName = association['name'];
 					if([this.orm.ASSOCIATION_TYPES['MANY-TO-MANY'], this.orm.ASSOCIATION_TYPES['MANY-TO-ONE']].indexOf(association.type)<0){
-						this.$log.info('Inspecting '+this.orm.dbName+'[' + id + '] entity\'s dependency \''+ associationName + '\' for entities to delete.');
+						this.$log.info("Inspecting {}[{}}] entity's dependency '{}' for entities to delete.", this.orm.dbName, id, associationName);
 						var associationDAO = association.targetDao ? association.targetDao() : this;
 						var settings = {};
 						var joinId = id;
@@ -347,7 +347,7 @@ DAO.prototype.remove = function() {
 						//associatedEntities = this.expand(associationName, id);
 						associatedEntities = associationDAO.list(settings);
 						if(associatedEntities && associatedEntities.length > 0){
-							this.$log.info('Deleting '+this.orm.dbName+'['+id+'] entity\'s '+associatedEntities.length+' dependent ' + associationName);
+							this.$log.info("Deleting {}[{}] entity's {} dependent {}", this.orm.dbName, id, associatedEntities.length, associationName);
 							this.notify('beforeRemoveAssociationSet', associatedEntities, id);
 							for(var j=0; j<associatedEntities.length; j++){
 								var associatedEntity = associatedEntities[j];
@@ -356,9 +356,8 @@ DAO.prototype.remove = function() {
 								associationDAO.remove.apply(associationDAO, [associatedEntity[associationDAO.orm.getPrimaryKey().name]]);
 								
 							}
-							this.$log.info(this.orm.dbName+'['+id+'] entity\'s '+associatedEntities.length+' dependent ' + associationName + ' '+ associatedEntities.length>1?'entities':'entity' +' deleted.');
-						}
-					}
+							this.$log.info("{}[{}] entity's {} dependent {} {} deleted.", this.orm.dbName, id, associatedEntities.length, associationName, associatedEntities.length>1?'entities':'entity');
+						}					}
 				} 
 	        }
 	    	//Delete by primary key value
@@ -382,7 +381,7 @@ DAO.prototype.remove = function() {
 };
 
 DAO.prototype.expand = function(expansionPath, context){
-	this.$log.info('Expanding for association path ' + expansionPath + ' and context entity ' + (typeof arguments[1] !== 'object' ? 'id ': '') + JSON.stringify(arguments[1]));
+	this.$log.info('Expanding for association path {} and context entity {}', expansionPath, (typeof arguments[1] !== 'object' ? 'id ': '') + JSON.stringify(arguments[1]));
 	if(!expansionPath || !expansionPath.length){
 		throw new Error('Illegal argument: expansionPath['+expansionPath+']');
 	}
@@ -415,7 +414,7 @@ DAO.prototype.expand = function(expansionPath, context){
 
 	if(association.type===this.orm.ASSOCIATION_TYPES['ONE-TO-ONE'] || association.type===this.orm.ASSOCIATION_TYPES['MANY-TO-ONE']){
 		var joinId = contextEntity[joinKey];
-		this.$log.info('Expanding association type ' + association.type + ' on '+joinKey+'['+joinId+']');
+		this.$log.info('Expanding association type {} on {}[{}]', association.type, joinKey, joinId);
 		expansion = associationTargetDAO.find.apply(associationTargetDAO, [joinId]);
 		
 		if(expansionPath.length>0){
@@ -427,7 +426,7 @@ DAO.prototype.expand = function(expansionPath, context){
 			settings = association.defaults;
 		var key = association.key || this.orm.getPrimaryKey().name;
 		var joinId = contextEntity[key];
-		this.$log.info('Expanding association type ' + association.type + ' on '+joinKey+'['+joinId+']');
+		this.$log.info('Expanding association type {} on {}[{}]', association.type, joinKey, joinId);
 		settings[joinKey] = joinId;
 		associationEntities = associationEntities.concat(associationTargetDAO.list.apply(associationTargetDAO, [settings]));
 		
@@ -577,7 +576,7 @@ DAO.prototype.count = function() {
         connection.close();
     }
     
-    this.$log.info(String(count) + ' '+this.orm.dbName+' entities counted');
+    this.$log.info('{} {} entities counted', String(count), this.orm.dbName);
 
     return count;
 };
