@@ -296,7 +296,7 @@ function ResultSet(internalResultset) {
 		return java.invoke(this.uuid, 'getFloat', [identifier]);
 	};
 
-	this.getInt = function(identifier) {
+	this.getInt = function(identifier) { console.error(typeof identifier)
 		return java.invoke(this.uuid, 'getInt', [identifier]);
 	};
 
