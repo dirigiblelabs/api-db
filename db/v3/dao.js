@@ -228,7 +228,7 @@ DAO.prototype.insert = function(_entity){
         	ids.push(dbEntity[this.orm.getPrimaryKey().name]);
 
 	    } catch(e) {
-	    	this.$log.error(e.message, e);
+	    	this.$log.error("Inserting "+this.orm.dbName+" "+(entities.length===1?'entity':'entities')+" failed", e);
 	    	this.$log.info('Rolling back changes after failed {}[{}] insert. ', this.orm.dbName, dbEntity[this.orm.getPrimaryKey().name]);
 			if(dbEntity[this.orm.getPrimaryKey().name]){
 				try{
@@ -484,7 +484,6 @@ DAO.prototype.find = function(id, expand, select) {
         if(select!==undefined){
 			if(select.constructor !== Array){
 				if(select.constructor === String){
-					select= String(new java.lang.String(""+expand));
 					select= select.split(',').map(function(sel){
 						if(sel.constructor !== String)
 							throw Error('Illegal argument: select array components are expected ot be strings but found ' + (typeof sel));
@@ -499,19 +498,7 @@ DAO.prototype.find = function(id, expand, select) {
 		if(select!==undefined && expand!==undefined){
 			select.push(this.orm.getPrimaryKey().name);
 			//TODO: checks
-			/*if(expand.constructor !== Array){
-				if(expand.constructor === String){
-					expand = String(new java.lang.String(""+expand));
-					expand =  expand.split(',').map(function(exp){
-						if(exp.constructor !== String)
-							throw Error('Illegal argument: expand array components are expected ot be strings but found ' + (typeof exp));
-						return exp.trim();
-					});
-				} else {
-					throw Error('Illegal argument: expand is expected to be string or array of strings but was ' + (typeof expand));
-				}
-			}
-			for(var i in expand){
+			/*for(var i in expand){
 				var association = this.orm.associations[expand[i]];
 				if(association && select.indexOf(association.joinKey)<1){ 
 					select.push(association.joinKey);
@@ -580,7 +567,7 @@ DAO.prototype.count = function() {
     	var parametericStatement = this.ormstatements.count.apply(this.ormstatements);
 		var rs = this.ormstatements.execute(parametericStatement, connection);
         if (rs.next()) {
-            count = rs.getInt(1);
+            count = rs.getString(1);
         }
     } catch(e) {
     	this.$log.error('Counting '+this.orm.dbName+' entities failed', e);
@@ -606,11 +593,11 @@ DAO.prototype.count = function() {
  * - $offset
  */
 DAO.prototype.list = function(settings) {
+	settings = settings || {};
 	var expand = settings.$expand || settings.expand;
 	if(expand!==undefined){
 		if(expand.constructor !== Array){
 			if(expand.constructor === String){
-				expand = String(new java.lang.String(""+expand));
 				expand =  expand.split(',').map(function(exp){
 					if(exp.constructor !== String)
 						throw Error('Illegal argument: expand array components are expected ot be strings but found ' + (typeof exp));
