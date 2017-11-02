@@ -771,10 +771,17 @@ exports.dao = function(oDefinition, logCtxName, ds){
 	var orm;
 	if(typeof oDefinition === 'string'){
 		var files = require('io/v3/files');
-		if(files.isFile(oDefinition)){
-			oDefinition = files.readText(oDefinition);
+		if(files.isReadable(oDefinition)){
+			var defText = files.readText(oDefinition);
+			try{
+				oDefinition = JSON.parse(defText);
+			} catch (parseError){
+				var logger = logging.getLogger("org.eclipse.dirigible.db.dao");
+				logger.error("Invalid JSON in " + oDefinition, parseError);
+				throw parseError;
+			}
 		} else {
-			throw Error('Cannot get dao definition from ' + oDefinition + '. Not a file.');
+			throw Error('Cannot get dao definition from ' + oDefinition + '. Check path and read permissions.');
 		}
 	} 
 	if(oDefinition["name"] && oDefinition["type"] && ["TABLE","VIEW"].indexOf(oDefinition)>-1){
