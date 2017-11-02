@@ -698,8 +698,8 @@ DAO.prototype.dropTable = function() {
 
 
 var toCamelCase = function(str){
-	return str.replace(/(?:_| |\b)(\w)/g, function(str, p1) {
-		return p1.toUpperCase()
+	return str.toLowerCase().replace(/(?:_| |\b)(\w)/g, function(str, p1, offset) {
+		return offset===0 ? p1 : p1.toUpperCase();
 	});
 };
 
@@ -741,15 +741,15 @@ var typeForSql = function(name, length){
 var fromTableDef = function(tableDef){
 	var orm = {};
 	orm["table"] = tableDef["name"];
-	if(tableDef["name"]["columns"]){
-		orm["table"]["properties"] = tableDef["name"]["columns"].map(function(columnDef, idx, arr){
+	if(tableDef["columns"]){
+		orm["properties"] = tableDef["columns"].map(function(columnDef, idx, arr){
 			var property = {
 				"name": toCamelCase(columnDef["name"]),
 				"column": columnDef["name"],
 				"type": typeForSql(columnDef["type"]),
-				"size": columnDef["length"] !== undefined ? parseInt(columnDef["length"], 10) : undefined,
-				"id": columnDef["primaryKey"]===true,
-				"required": columnDef["nullable"] !== true,
+				"size": columnDef["length"] !== undefined && columnDef["length"] !=="0"? parseInt(columnDef["length"], 10) : undefined,
+				"id": columnDef["primaryKey"]==='true',
+				"required": columnDef["nullable"] !== 'true'
 			};
 			return property;
 		});
@@ -784,10 +784,11 @@ exports.dao = function(oDefinition, logCtxName, ds){
 			throw Error('Cannot get dao definition from ' + oDefinition + '. Check path and read permissions.');
 		}
 	} 
-	if(oDefinition["name"] && oDefinition["type"] && ["TABLE","VIEW"].indexOf(oDefinition)>-1){
+
+	if(oDefinition["name"] && oDefinition["type"] && ["TABLE","VIEW"].indexOf(oDefinition["type"])>-1){
 		orm = fromTableDef(oDefinition);
 	} else {
 		orm = oDefinition;
-	}
+	} console.error(JSON.stringify(orm))
 	return new DAO(orm, logCtxName, ds);
 };
