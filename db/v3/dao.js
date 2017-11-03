@@ -802,17 +802,11 @@ var fromTableDef = function(tableDef){
 	return orm;
 };
 
-
-exports.dao = function(tableDef, logCtxName, ds){
-	var orm = fromTableDef (tableDef);
-	return new DAO(orm, logCtxName, ds);
-};
-
 /**
  * oDefinition can be a valid path to a .table file or any other text file contianing a standard dao orm definition.
  * Or it can be table definition or standard orm definition object.
  */
-exports.dao = function(oDefinition, logCtxName, ds){
+exports.create = exports.dao = function(oDefinition, logCtxName, ds){
 	var orm;
 	if(typeof oDefinition === 'string'){
 		var files = require('io/v3/files');
