@@ -783,7 +783,7 @@ var typeForSql = function(name, length){
 	return;
 };
 
-var fromTableDef = function(tableDef){
+exports.ormFromTable = var fromTableDef = function(tableDef){
 	var orm = {};
 	orm["table"] = tableDef["name"];
 	if(tableDef["columns"]){
