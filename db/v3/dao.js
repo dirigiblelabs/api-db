@@ -14,11 +14,7 @@
 var DAO = exports.DAO = function(orm, logCtxName, dataSourceName, databaseType){
 	if(orm === undefined)
 		throw Error('Illegal argument: orm['+ orm + ']');
-	
-	this.getConnection = function(){
-		return require("db/v3/database").getConnection(databaseType, dataSourceName);
-	};
-		
+
 	this.orm = require("db/v3/orm").get(orm);
 	
 	var sequences = require("db/v3/sequence");
@@ -30,7 +26,7 @@ var DAO = exports.DAO = function(orm, logCtxName, dataSourceName, databaseType){
 		return sequences.nextval(this.sequenceName, databaseType, dataSourceName);
 	};	
 	
-	var conn = this.getConnection();
+	var conn = require("db/v3/database").getConnection(databaseType, dataSourceName);
 	try{
 		this.ormstatements = require('db/v3/ormstatements').create(this.orm, conn);
 	} finally {
@@ -739,7 +735,7 @@ DAO.prototype.createTable = function() {
     } 
 };
 
-DAO.prototype.dropTable = function() {
+DAO.prototype.dropTable = function(dropIdSequence) {
 	this.$log.info('Dropping table {}.', this.orm.table);
 	var parametericStatement = this.ormstatements.dropTable.apply(this.ormstatements);
     try {
@@ -750,14 +746,17 @@ DAO.prototype.dropTable = function() {
 		throw e;
     } 
     
-    this.$log.info('Dropping table {} sequence {}.', this.orm.table, this.sequenceName);
-   	try{
-   	   	this.dropIdGenerator();	
-    	this.$log.info('Table {} sequence {} dropped.', this.orm.table, this.sequenceName);   	   	
-   	} catch(e) {
-    	this.$log.error("Dropping table {} sequence {} failed.", e, this.orm.table, this.sequenceName);
-		throw e;
+    if(dropIdSequence){
+	    this.$log.info('Dropping table {} sequence {}.', this.orm.table, this.sequenceName);
+	   	try{
+	   	   	this.dropIdGenerator();	
+	    	this.$log.info('Table {} sequence {} dropped.', this.orm.table, this.sequenceName);   	   	
+	   	} catch(e) {
+	    	this.$log.error("Dropping table {} sequence {} failed.", e, this.orm.table, this.sequenceName);
+			throw e;
+	    }    	
     }
+
     return this;
 };
 
@@ -767,7 +766,6 @@ var toCamelCase = function(str){
 		return offset===0 ? p1 : p1.toUpperCase();
 	});
 };
-
 
 var fromTableDef = exports.ormFromTable = function(tableDef){
 	var orm = {};
