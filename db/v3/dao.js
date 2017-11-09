@@ -45,33 +45,40 @@ var DAO = exports.DAO = function(orm, logCtxName, dataSourceName, databaseType){
 	var execQuery = require('db/v3/query');
 	var execUpdate = require('db/v3/update');
 	
-	this.execute = function(sqlBuilder, entity){
+	this.execute = function(sqlBuilder, parameterBindings){
 		var sql = sqlBuilder.build();
 		if(sql === undefined || sql.length<1)
 			throw Error("Illegal argument: sql from statement builder is invalid["+sql+"]");
 		this.$log.info('Executing SQL Statement: {}', sql);
 	 	
-	 	var parametricFields = sqlBuilder.parametricFields && sqlBuilder.parametricFields();
-	 	var parameterBindings;
-	 	if(entity && parametricFields && parametricFields.length>0){
-	 		parameterBindings= [];
-		 	for(var i=0; i<parametricFields.length; i++){
-		 		var val = entity ? entity[parametricFields[i].name] : undefined;
-	      		if((val=== null || val===undefined) && sqlBuilder.operation!==undefined && sqlBuilder.operation.toLowerCase()==='select'){
+	 	var parameters = sqlBuilder.parameters && sqlBuilder.parameters();
+	 	var _parameterBindings;
+	 	if(parameters && parameters.length>0){
+	 		_parameterBindings = [];
+		 	for(var i = 0; i< parameters.length; i++){
+		 		var val;
+		 		if(parameterBindings){
+		 			if(Array.isArray(parameterBindings)){
+		 				val = parameterBindings[i];
+		 			} else {
+		 				parameterBindings[parameters[i].name];
+		 			}
+		 		}
+	      		if((val=== null || val===undefined) && sql.toLowerCase().startsWith()==='select'){
 		 			continue;
 	 			}
 		 		var index = i+1;
 		 		this.$log.info('Binding to parameter[{}]: {}', index, val);
-		 		parameterBindings.push(val);
+		 		_parameterBindings.push(val);
 		 	} 
 	 	}
 	 	
-	 	var result; 
-	
-	 	if(sql.startsWith('SELECT') || sql.startsWith('select')){
-	 		result = execQuery.execute(sql, parameterBindings, databaseType, dataSourceName);
+	 	var result;
+
+	 	if(sql.toLowerCase().startsWith()==='select'){
+	 		result = execQuery.execute(sql, _parameterBindings, databaseType, dataSourceName);
 	 	} else {
-	 		result = execUpdate.execute(sql, parameterBindings, databaseType, dataSourceName);
+	 		result = execUpdate.execute(sql, _parameterBindings, databaseType, dataSourceName);
 	 	} 		
 	 	
 	 	return result !== null ? result : [];
@@ -785,7 +792,7 @@ var fromTableDef = exports.ormFromTable = function(tableDef){
 			}
 			return property;
 		});
-	};
+	}
 	return orm;
 };
 
