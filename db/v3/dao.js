@@ -61,21 +61,24 @@ var DAO = exports.DAO = function(orm, logCtxName, dataSourceName, databaseType){
 		 			if(Array.isArray(parameterBindings)){
 		 				val = parameterBindings[i];
 		 			} else {
-		 				parameterBindings[parameters[i].name];
+		 				val = parameterBindings[parameters[i].name];
 		 			}
 		 		}
-	      		if((val=== null || val===undefined) && sql.toLowerCase().startsWith()==='select'){
+	      		if((val=== null || val===undefined) && sql.toLowerCase().startsWith('select')){
 		 			continue;
 	 			}
 		 		var index = i+1;
 		 		this.$log.info('Binding to parameter[{}]: {}', index, val);
-		 		_parameterBindings.push(val);
+		 		_parameterBindings.push({
+		 			"type": parameters[i].type,
+		 			"value": val
+		 		});
 		 	} 
 	 	}
 	 	
 	 	var result;
-
-	 	if(sql.toLowerCase().startsWith()==='select'){
+	 	
+	 	if(sql.toLowerCase().startsWith('select')){
 	 		result = execQuery.execute(sql, _parameterBindings, databaseType, dataSourceName);
 	 	} else {
 	 		result = execUpdate.execute(sql, _parameterBindings, databaseType, dataSourceName);
