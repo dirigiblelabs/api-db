@@ -196,7 +196,7 @@ exports.getDialect = function(connection) {
 				};
 				
 				this.order = function(column, asc) {
-					if (asc) {
+					if (asc !== undefined) {
 						java.invoke(this.uuid, 'order', [column, asc]);
 					} else {
 						java.invoke(this.uuid, 'order', [column]);
