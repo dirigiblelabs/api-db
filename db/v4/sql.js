@@ -308,7 +308,7 @@ exports.getDialect = function(connection) {
 				};
 				
 				this.set = function(column, value) {
-					this.native.set(column, value]);
+					this.native.set(column, value);
 					if(arguments.length>2){
 						if(Array.isArray(arguments[2]))
 							_parameters = _parameters.concat(arguments[2]);
