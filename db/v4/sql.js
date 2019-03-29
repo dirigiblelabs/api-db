@@ -873,7 +873,7 @@ exports.getDialect = function(connection) {
 	var dialect = new Dialect();
 	var native;
 	if (connection) {
-		native = org.eclipse.dirigible.api.v3.db.DatabaseFacade.getNative(connection);
+		native = org.eclipse.dirigible.api.v3.db.DatabaseFacade.getNative(connection.native);
 	} else {
 		native = org.eclipse.dirigible.api.v3.db.DatabaseFacade.getDefault();
 	}
