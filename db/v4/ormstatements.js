@@ -11,7 +11,7 @@
 "use strict";
 
 var ORMStatements = function(orm, dialect){
-	this.$log = require('log/logging').getLogger('db.dao.ormstatements');
+	this.$log = require('log/v4/logging').getLogger('db.dao.ormstatements');
 	this.orm = orm;
 	this.dialect = dialect || require('db/v4/sql').getDialect();
 };
