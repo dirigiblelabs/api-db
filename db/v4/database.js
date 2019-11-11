@@ -15,8 +15,6 @@
  * Note: This module is supported only with the Mozilla Rhino engine
  */
 
-/*eslint-env nashorn */
-
 var bytes = require('io/v4/bytes');
 
 exports.getDatabaseTypes = function() {
