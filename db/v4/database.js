@@ -608,7 +608,7 @@ function CallableStatement() {
         return this.native.getParameterMetaData();
     };
 
-    this.isClosed() = function() {
+    this.isClosed = function() {
         return this.native.isClosed();
     };
 
