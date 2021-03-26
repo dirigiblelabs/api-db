@@ -19,7 +19,7 @@ var database = require("db/v4/database");
 
 exports.create = function(sql, databaseType, datasourceName) {
     let parameters = [];
-	return update.execute(sql, parameters, databaseType, datasourceName);
+	update.execute(sql, parameters, databaseType, datasourceName);
 };
 
 exports.execute = function(sql, parameters, databaseType, datasourceName) {
