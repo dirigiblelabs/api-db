@@ -1,4 +1,4 @@
-# API V3 - Database
+# API V4 - Database
 
 [![Eclipse License](http://img.shields.io/badge/license-Eclipse-brightgreen.svg)](LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/dirigiblelabs/api-v3-db.svg)](https://github.com/dirigiblelabs/api-v3-db/graphs/contributors)
